@@ -903,6 +903,19 @@ namespace KRPC.SpaceCenter.Services.Parts
 
         [KRPCProperty]
 
+        public bool Glow
+        {
+            set
+            {
+                if (value == false) { InternalPart.SetHighlightDefault(); }
+                else
+                {
+                    InternalPart.SetHighlight(true, true);
+                    InternalPart.SetHighlightColor(Color.yellow);
+                    InternalPart.SetHighlightType(global::Part.HighlightType.AlwaysOn);
+                }
+            }
+
         public AutostrutState AutoStrutMode
         {
             get
