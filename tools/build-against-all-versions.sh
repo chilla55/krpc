@@ -1,26 +1,22 @@
 #!/bin/bash
 
-set -e
+set -ev
 
 bazel build //:LICENSE  # Build something to create symlinks
 mkdir -p bazel-bin/lib
 pushd bazel-bin/lib
 
 read -d '' versions << EOM || true
-1.2.2.1622
-1.3.0.1804
-1.3.1.1891
-1.4.0.2077
-1.4.1.2089
-1.4.2.2110
-1.4.3.2152
-1.4.4.2215
-1.4.5.2243
-1.5.0.2332
-1.5.1.2335
+1.10.1.2939
 EOM
 
+# Save lib/ksp symlink
+popd
+[[ -e lib/ksp ]] && mv lib/ksp lib/ksp-orig
+pushd bazel-bin/lib
+
 for version in $versions; do
+    # Download and extract ksp libs
     if [ ! -f ksp-$version.tar.gz ]; then
         wget -O ksp-$version.tar.gz https://krpc.s3.amazonaws.com/lib/ksp-$version.tar.gz
     fi
@@ -31,6 +27,7 @@ for version in $versions; do
         popd
     fi
 
+    # Build plugin
     popd
     rm -f lib/ksp
     ln -s -r bazel-bin/lib/ksp-$version lib/ksp
@@ -38,4 +35,7 @@ for version in $versions; do
     pushd bazel-bin/lib
 done
 
+# Restore lib/ksp symlink
 popd
+rm -f lib/ksp
+[[ -e lib/ksp-orig ]] && mv lib/ksp-orig lib/ksp

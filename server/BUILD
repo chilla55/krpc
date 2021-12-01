@@ -46,7 +46,10 @@ csharp_assembly_info(
         'DynamicProxyGenAssembly2'
     ],
     cls_compliant = False,
-    visibility = ['//tools/ServiceDefinitions:__pkg__'] # Make visible to ServiceDefinitions so it can build KRPC.dll with .NET 4.5 references
+    visibility = [
+        '//tools/ServiceDefinitions:__pkg__', # Make visible to ServiceDefinitions so it can build KRPC.dll with .NET 4.5 references
+        '//:__pkg__' # Make visible to //:csproj-deps so it can copy AssemblyInfo.cs to generated_deps
+    ]
 )
 
 # Make sources visible to ServiceDefinitions so it can build KRPC.dll with .NET 4.5 references
@@ -63,6 +66,10 @@ deps = [
     '//tools/build/ksp:Assembly-CSharp',
     '//tools/build/ksp:Assembly-CSharp-firstpass',
     '//tools/build/ksp:UnityEngine',
+    '//tools/build/ksp:UnityEngine.AnimationModule',
+    '//tools/build/ksp:UnityEngine.CoreModule',
+    '//tools/build/ksp:UnityEngine.IMGUIModule',
+    '//tools/build/ksp:UnityEngine.InputLegacyModule',
     '//tools/build/ksp:UnityEngine.UI',
     '//tools/build/ksp:mscorlib',
     '//tools/build/ksp:System',
@@ -96,7 +103,10 @@ csharp_assembly_info(
     title = 'KRPC.Test',
     copyright = author,
     version = assembly_version,
-    cls_compliant = False
+    cls_compliant = False,
+    visibility = [
+        '//:__pkg__' # Make visible to krpc-genfiles so it can copy AssemblyInfo.cs to zip
+    ]
 )
 
 test_deps = [

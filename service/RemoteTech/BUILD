@@ -16,7 +16,10 @@ csharp_assembly_info(
     description = 'RemoteTech API for kRPC',
     version = assembly_version,
     copyright = author,
-    cls_compliant = False
+    cls_compliant = False,
+    visibility = [
+        '//:__pkg__' # Make visible to //:csproj-deps so it can copy AssemblyInfo.cs to generated_deps
+    ]
 )
 
 srcs = [':AssemblyInfo'] + glob(['src/**/*.cs'])
@@ -39,11 +42,16 @@ service_definitions(
 
 test_suite(
     name = 'test',
-    tests = [':lint', ':gendarme']
+    tests = [':lint']
+)
+
+test_suite(
+    name = 'lint',
+    tests = [':pylint',':gendarme']
 )
 
 py_lint_test(
-    name = 'lint',
+    name = 'pylint',
     srcs = glob(['test/*.py']),
     pylint_config = 'test/pylint.rc',
     deps = ['//client/python', '//tools/krpctest'],

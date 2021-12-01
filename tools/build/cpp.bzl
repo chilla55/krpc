@@ -14,7 +14,7 @@ def _check_impl(ctx):
     args.extend(['-I%s' % x.short_path for x in includes])
     args.extend([x.short_path for x in srcs])
 
-    ctx.file_action(
+    ctx.actions.write(
         ctx.outputs.executable,
         '/usr/bin/cppcheck %s\n' % ' '.join(args)
     )
@@ -41,7 +41,7 @@ def _lint_impl(ctx):
     extra_files = ctx.files.extra_files
     filters = ctx.attr.filters
     cpplint = ctx.executable.cpplint
-    cpplint_runfiles = list(ctx.attr.cpplint.default_runfiles.files)
+    cpplint_runfiles = ctx.attr.cpplint.default_runfiles.files.to_list()
     runfiles = [cpplint] + cpplint_runfiles + srcs + hdrs + extra_files
     sub_commands = []
 
@@ -57,10 +57,10 @@ def _lint_impl(ctx):
     args.extend([x.short_path for x in srcs + hdrs])
     sub_commands.append('%s/%s %s' % (runfiles_dir, cpplint.basename, ' '.join(args)))
 
-    ctx.file_action(
+    ctx.actions.write(
         ctx.outputs.executable,
         content = ' &&\n'.join(sub_commands)+'\n',
-        executable = True
+        is_executable = True
     )
 
     return struct(

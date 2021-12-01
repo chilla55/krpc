@@ -53,7 +53,7 @@ def _impl(ctx):
         'zip --quiet -r $CWD/%s ./' % output.path
     ])
 
-    ctx.action(
+    ctx.actions.run_shell(
         inputs = inputs + macros,
         outputs = [output],
         progress_message = 'Running autotools and creating package %s' % output.short_path,
@@ -63,7 +63,7 @@ def _impl(ctx):
 autotools_dist = rule(
     implementation = _impl,
     attrs = {
-        'files': attr.label_list(allow_files=True, mandatory=True, non_empty=True),
+        'files': attr.label_list(allow_files=True, mandatory=True, allow_empty=True),
         'macros': attr.label_list(allow_files=True),
         'source_dir': attr.string(mandatory=True),
         'path_map': attr.string_dict(),

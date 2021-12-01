@@ -70,6 +70,7 @@ krpctest
 laplace
 libxml
 libxslt
+libz
 linux
 localhost
 lua
@@ -78,6 +79,7 @@ mach
 massless
 maths
 mits
+mutex
 namespace
 namespaces
 namespacing

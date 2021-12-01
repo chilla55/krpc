@@ -9,6 +9,7 @@ deps = [
     '//tools/build/ksp:Assembly-CSharp',
     '//tools/build/ksp:Assembly-CSharp-firstpass',
     '//tools/build/ksp:UnityEngine',
+    '//tools/build/ksp:UnityEngine.CoreModule',
     '//tools/build/ksp:UnityEngine.UI',
     '//tools/build/ksp:mscorlib',
     '//tools/build/ksp:System',
@@ -28,7 +29,10 @@ csharp_assembly_info(
     title = 'TestingTools',
     version = assembly_version,
     copyright = author,
-    cls_compliant = False
+    cls_compliant = False,
+    visibility = [
+        '//:__pkg__' # Make visible to //:csproj-deps so it can copy AssemblyInfo.cs to generated_deps
+    ]
 )
 
 csharp_library(

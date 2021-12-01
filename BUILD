@@ -156,7 +156,7 @@ pkg_zip(
         'service/UI/': 'GameData/kRPC/',
         'service/UI/CHANGES.txt': 'GameData/kRPC/CHANGES.UI.txt',
         # Module Manager
-        '../module_manager/file/ModuleManager.3.0.7.dll': 'GameData/ModuleManager.3.0.7.dll',
+        '../module_manager/file/ModuleManager.4.1.3.dll': 'GameData/ModuleManager.4.1.3.dll',
         # Clients
         'client/cnano/': 'client/',
         'client/cpp/': 'client/',
@@ -280,10 +280,12 @@ test_suite(
         '//service/SpaceCenter:lint',
         '//service/Drawing:lint',
         '//service/InfernalRobotics:lint',
+        '//service/KerbalAlarmClock:lint',
         '//service/RemoteTech:lint',
         '//service/UI:lint',
-        '//client/csharp:lint',
+        '//client/cnano:lint',
         '//client/cpp:lint',
+        '//client/csharp:lint',
         '//client/java:lint',
         '//client/python:lint',
         '//client/websockets:lint',
@@ -293,9 +295,61 @@ test_suite(
     ]
 )
 
+filegroup (
+    name = 'csproj-deps',
+    srcs = [
+
+        '//server:AssemblyInfo',
+        '//server:TestAssemblyInfo',
+
+        '//client/csharp:AssemblyInfo',
+        '//client/csharp:services-krpc',
+        '//client/csharp:services-spacecenter',
+        '//client/csharp:services-infernalrobotics',
+        '//client/csharp:services-kerbalalarmclock',
+        '//client/csharp:services-testservice',
+
+        '//service/Drawing:AssemblyInfo',
+        '//service/InfernalRobotics:AssemblyInfo',
+        '//service/KerbalAlarmClock:AssemblyInfo',
+        '//service/RemoteTech:AssemblyInfo',
+        '//service/SpaceCenter:AssemblyInfo',
+        '//service/UI:AssemblyInfo',
+
+        '//tools/ServiceDefinitions:AssemblyInfo',
+        '//tools/TestServer:AssemblyInfo',
+        '//tools/TestingTools:AssemblyInfo',
+        '//tools/cslibs',
+
+        '//protobuf:csharp',
+    ]
+)
+
+# Copies all dependencies needed for :csproj to "$WORKSPACE/generated_deps".
+# This goes against Bazel guidelines but the folder is an easier way to build
+# the .sln for non-Bazel users and users who use bazel for packaging but
+# an IDE for programming and quick builds.
+genrule(
+    name = 'copy_csproj_deps',
+    srcs = ['csproj-deps'],
+    outs = ['build_files/a'],
+    local = 1,
+    cmd_bash = """origPath=$$(pwd -P);
+    cd -P server/..;
+    for path in $$(echo $(SRCS) | tr " " "\n") # foreach file in :csproj-deps
+    do
+    endpath=$$(echo $$(echo $$path | sed s#bazel-out/k8-fastbuild/bin/##g)); # cleans up the path to be relative to the workspace dir
+    install -D /dev/null "generated_deps/$$endpath";                         # https://unix.stackexchange.com/a/63105
+    cp $$path generated_deps/$$endpath;
+    done;
+    cd -P $$origPath;
+    touch $@ # create the output file """
+)
+
 filegroup(
     name = 'csproj',
     srcs = [
+        '//tools/cslibs',
         '//server',
         '//server:KRPC.Test',
         '//service/SpaceCenter',
@@ -308,6 +362,7 @@ filegroup(
         '//client/csharp:KRPC.Client.Test',
         '//tools/ServiceDefinitions',
         '//tools/TestingTools',
-        '//tools/TestServer'
+        '//tools/TestServer',
+        ':copy_csproj_deps'
     ]
 )

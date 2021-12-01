@@ -161,6 +161,25 @@ namespace KRPC.SpaceCenter.Services
         }
 
         /// <summary>
+        /// Deploy or retract all wheels of the given type.
+        /// </summary>
+        void DeployWheels(WheelType wheelType, bool state)
+        {
+            foreach (var part in InternalVessel.parts)
+            {
+                foreach (var deployment in part.FindModulesImplementing<ModuleWheels.ModuleWheelDeployment>())
+                {
+                    var gear = part.Modules[deployment.baseModuleIndex] as ModuleWheelBase;
+                    if (gear != null && gear.wheelType == wheelType)
+                    {
+                        deployment.ActionToggle(new KSPActionParam(0, state ? KSPActionType.Activate : KSPActionType.Deactivate));
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
         /// Returns whether all landing legs on the vessel are deployed,
         /// and sets the deployment state of all landing legs.
         /// Does not include wheels (for example landing gear).
@@ -169,11 +188,7 @@ namespace KRPC.SpaceCenter.Services
         [KRPCProperty]
         public bool Legs {
             get { return parts.Legs.All (part => part.Deployed); }
-            set {
-                foreach (var part in parts.Legs)
-                    if (part.Deployable)
-                        part.Deployed = value;
-            }
+            set { DeployWheels(WheelType.LEG, value); }
         }
 
         /// <summary>
@@ -186,9 +201,8 @@ namespace KRPC.SpaceCenter.Services
         public bool Wheels {
             get { return parts.Wheels.All (part => part.Deployed); }
             set {
-                foreach (var part in parts.Wheels)
-                    if (part.Deployable)
-                        part.Deployed = value;
+                DeployWheels(WheelType.FREE, value);
+                DeployWheels(WheelType.MOTORIZED, value);
             }
         }
 
@@ -466,11 +480,14 @@ namespace KRPC.SpaceCenter.Services
         /// When called, the active vessel may change. It is therefore possible that,
         /// after calling this function, the object(s) returned by previous call(s) to
         /// <see cref="SpaceCenter.ActiveVessel"/> no longer refer to the active vessel.
+        /// Throws an exception if staging is locked.
         /// </remarks>
         [KRPCMethod]
         public IList<Vessel> ActivateNextStage ()
         {
             CheckActiveVessel ();
+            if (StageLock)
+                throw new InvalidOperationException("Staging is locked");
             if (!StageManager.CanSeparate)
                 throw new YieldException (new ParameterizedContinuation<IList<Vessel>> (ActivateNextStage));
             var preVessels = FlightGlobals.Vessels.ToArray ();
@@ -484,6 +501,25 @@ namespace KRPC.SpaceCenter.Services
                 throw new YieldException (new ParameterizedContinuation<IList<Vessel>, global::Vessel[]> (PostActivateStage, preVessels));
             var postVessels = FlightGlobals.Vessels;
             return postVessels.Except (preVessels).Select (vessel => new Vessel (vessel)).ToList ();
+        }
+
+        /// <summary>
+        /// Whether staging is locked on the vessel.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to locking the staging using Alt+L
+        /// </remarks>
+        [KRPCProperty]
+        [SuppressMessage("Gendarme.Rules.Correctness", "MethodCanBeMadeStaticRule")]
+        public bool StageLock
+        {
+            get { return InputLockManager.GetControlLock("manualStageLock") == ControlTypes.STAGING; }
+            set {
+                if (value)
+                    InputLockManager.SetControlLock(ControlTypes.STAGING, "manualStageLock");
+                else
+                    InputLockManager.RemoveControlLock("manualStageLock");
+            }
         }
 
         /// <summary>

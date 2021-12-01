@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using PreFlightTests;
 using UnityEngine;
 
@@ -45,10 +46,21 @@ namespace KRPC.Utils
         /// <summary>
         /// Constructs a MultiOptionDialog
         /// </summary>
+        [SuppressMessage ("Gendarme.Rules.Smells", "AvoidLongMethodsRule")]
         public static MultiOptionDialog NewMultiOptionDialog (
             string name, string msg, string windowTitle, UISkinDef skin,
             params DialogGUIBase[] options) {
-            if (Versioning.version_major * 100 + Versioning.version_minor >= 103) {
+            if (Versioning.version_major * 100 + Versioning.version_minor >= 108)
+            {
+                // KSP 1.8.0 and up
+                var ctor = typeof(MultiOptionDialog).GetConstructor(new Type[] {
+                    typeof(string), typeof(string), typeof(string),
+                    typeof(UISkinDef), typeof(DialogGUIBase[])
+                });
+                return (MultiOptionDialog)ctor.Invoke( new object[] {
+                    name, msg, windowTitle, skin, options
+                });
+            } else if (Versioning.version_major * 100 + Versioning.version_minor >= 103) {
                 // KSP 1.3.0 and up
                 var ctor = typeof(MultiOptionDialog).GetConstructor(new Type[] {
                     typeof(string), typeof(string), typeof(string),
@@ -130,6 +142,101 @@ namespace KRPC.Utils
                 return false;
             // KSP 1.4.0 and up
             return scene.ToString() == "MISSIONBUILDER";
+        }
+
+        /// <summary>
+        /// Methods mimicking ModuleDecouplerBase that can be used in KSP 1.6.1 and below
+        /// Uses reflection to call these methods, as the name of the base class changed in KSP 1.7
+        /// </summary>
+        [SuppressMessage ("Gendarme.Rules.Design", "AvoidVisibleNestedTypesRule")]
+        public class ModuleDecoupler
+        {
+            private object decoupler;
+            private Type type;
+
+            /// <summary>
+            /// Create a decoupler part module wrapper for the given part. Part must have a decoupler part module.
+            /// </summary>
+            public ModuleDecoupler(global::Part part)
+            {
+                var moduleDecouple = part.Modules.OfType<ModuleDecouple>().FirstOrDefault();
+                if (moduleDecouple != null) {
+                    decoupler = moduleDecouple;
+                } else {
+                    var moduleAnchoredDecoupler = part.Modules.OfType<ModuleAnchoredDecoupler>().FirstOrDefault();
+                    decoupler = moduleAnchoredDecoupler;
+                }
+                if (decoupler != null)
+                    type = decoupler.GetType();
+            }
+
+            /// <summary>
+            /// Get the intance of the part module that this object is wrapping.
+            /// </summary>
+            public object Instance {
+                get { return decoupler; }
+            }
+
+            /// <summary>
+            /// Returns true if the decoupler is enabled
+            /// </summary>
+            public bool IsEnabled
+            {
+                get { return (bool)type.GetField("isEnabled").GetValue(decoupler); }
+            }
+
+            /// <summary>
+            /// Returns true if the decoupler is decoupled
+            /// </summary>
+            public bool IsDecoupled
+            {
+                get { return (bool)type.GetField("isDecoupled").GetValue(decoupler); }
+            }
+
+            /// <summary>
+            /// Decouples the decoupler
+            /// </summary>
+            public void Decouple()
+            {
+                type.GetMethod("Decouple").Invoke(decoupler, null);
+            }
+
+            /// <summary>
+            /// Returns true if staging is enabled for the decoupler
+            /// </summary>
+            public bool StagingEnabled
+            {
+                get { return (bool)type.GetMethod("StagingEnabled").Invoke(decoupler, null); }
+            }
+
+            /// <summary>
+            /// Returns the ejection force of the decoupler in kN
+            /// </summary>
+            public float EjectionForce
+            {
+                get { return (float)type.GetField("ejectionForce").GetValue(decoupler); }
+            }
+
+            /// <summary>
+            /// Returns the attachment node for the decoupler explosive
+            /// </summary>
+            public AttachNode ExplosiveNode
+            {
+                get { return (AttachNode)type.GetProperty("ExplosiveNode").GetValue(decoupler, null); }
+            }
+
+            /// <summary>
+            /// Returns true if the decoupler is an omni decoupler.
+            /// Always returns false for anchored decouplers.
+            /// </summary>
+            public bool IsOmniDecoupler
+            {
+                get {
+                    if (type.Name == "ModuleDecoupler")
+                        return (bool)type.GetField("isOmniDecoupler").GetValue(decoupler);
+                    return false;
+                }
+            }
         }
     }
 }

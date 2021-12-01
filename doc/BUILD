@@ -306,6 +306,10 @@ csharp_library_multiple(
         '//tools/build/ksp:Assembly-CSharp',
         '//tools/build/ksp:Assembly-CSharp-firstpass',
         '//tools/build/ksp:UnityEngine',
+        '//tools/build/ksp:UnityEngine.AnimationModule',
+        '//tools/build/ksp:UnityEngine.CoreModule',
+        '//tools/build/ksp:UnityEngine.IMGUIModule',
+        '//tools/build/ksp:UnityEngine.InputLegacyModule',
         '//tools/build/ksp:UnityEngine.UI',
         '//tools/build/ksp:mscorlib',
         '//tools/build/ksp:System',
@@ -340,7 +344,7 @@ test_suite(
 py_lint_test(
     name = 'lint-python',
     srcs = glob(['src/scripts/*.py'], exclude=['src/scripts/communication-protocol.py']),
-    pep8_config = 'src/scripts/pep8.ini',
+    pycodestyle_config = 'src/scripts/pycodestyle.ini',
     pylint_config = 'src/scripts/pylint.rc',
     size = 'small'
 )

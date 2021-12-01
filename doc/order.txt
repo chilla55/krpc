@@ -359,6 +359,7 @@ SpaceCenter.Control.WheelThrottle
 SpaceCenter.Control.WheelSteering
 SpaceCenter.Control.CurrentStage
 SpaceCenter.Control.ActivateNextStage
+SpaceCenter.Control.StageLock
 SpaceCenter.Control.GetActionGroup
 SpaceCenter.Control.SetActionGroup
 SpaceCenter.Control.ToggleActionGroup
@@ -504,6 +505,7 @@ SpaceCenter.Part.Decoupler
 SpaceCenter.Part.DockingPort
 SpaceCenter.Part.Engine
 SpaceCenter.Part.Experiment
+SpaceCenter.Part.Experiments
 SpaceCenter.Part.Fairing
 SpaceCenter.Part.Intake
 SpaceCenter.Part.Leg
@@ -660,6 +662,8 @@ SpaceCenter.Propellant.IsDeprived
 SpaceCenter.Propellant.Ratio
 SpaceCenter.Experiment
 SpaceCenter.Experiment.Part
+SpaceCenter.Experiment.Name
+SpaceCenter.Experiment.Title
 SpaceCenter.Experiment.Run
 SpaceCenter.Experiment.Transmit
 SpaceCenter.Experiment.Dump
@@ -752,8 +756,10 @@ SpaceCenter.RCS.ForwardEnabled
 SpaceCenter.RCS.UpEnabled
 SpaceCenter.RCS.RightEnabled
 SpaceCenter.RCS.AvailableTorque
+SpaceCenter.RCS.AvailableThrust
 SpaceCenter.RCS.MaxThrust
 SpaceCenter.RCS.MaxVacuumThrust
+SpaceCenter.RCS.ThrustLimit
 SpaceCenter.RCS.Thrusters
 SpaceCenter.RCS.SpecificImpulse
 SpaceCenter.RCS.VacuumSpecificImpulse
@@ -1048,6 +1054,7 @@ SpaceCenter.ContractParameter.ScienceCompletion
 Drawing
 Drawing.AddLine
 Drawing.AddDirection
+Drawing.AddDirectionFromCom
 Drawing.AddPolygon
 Drawing.AddText
 Drawing.Clear

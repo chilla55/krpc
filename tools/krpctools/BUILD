@@ -1,4 +1,4 @@
-load('//tools/build:python.bzl', 'py_sdist', 'py_script', 'py_test', 'py3_test', 'py_lint_test')
+load('//tools/build:python.bzl', 'py_sdist', 'py_script', 'py2_test', 'py3_test', 'py_lint_test')
 load('//:config.bzl', 'version', 'python_version')
 
 license_text = """This license (GPL v3) applies to all parts of krpc.clientgen except for the following:
@@ -55,7 +55,8 @@ py_sdist(
         '//tools/build/mono-4.5:System.Runtime',
         '//tools/build/mono-4.5:System.IO',
         '//tools/build/mono-4.5:System.Xml',
-        '//tools/TestServer:ServiceDefinitions'
+        '//tools/TestServer:ServiceDefinitions',
+        '//tools/TestServer:archive'
     ] +
     glob(['krpctools/**/*.py', 'krpctools/**/*.tmpl', 'krpctools/test/*.json',
           'krpctools/test/**/*.txt', 'krpctools/test/**/*.rst']),
@@ -66,14 +67,14 @@ py_sdist(
         'tools/ServiceDefinitions/KRPC.dll': 'krpctools/bin/KRPC.dll',
         'tools/ServiceDefinitions/KRPC.xml': 'krpctools/bin/KRPC.xml',
         'tools/TestServer/TestService.json': 'krpctools/test/TestService.json',
-        'tools/build/mono-4.5/': 'krpctools/bin/'
+        'tools/build/mono-4.5/': 'krpctools/bin/',
+        'tools/TestServer/': 'krpctools/bin/'
     }
 )
 
 deps = [
-    '//client/python',
+    '//client/python:python_base',
     '@python_protobuf//file',
-    '@python_enum34//file',
     '@python_six//file',
     '@python_jinja2//file',
     '@python_markupsafe//file'
@@ -105,7 +106,7 @@ test_suite(
     tests = [':test2', ':test3']
 )
 
-py_test(
+py2_test(
     name = 'test2',
     src = ':krpctools',
     pkg = 'krpctools-'+python_version,

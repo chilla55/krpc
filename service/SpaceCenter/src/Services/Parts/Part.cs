@@ -9,6 +9,8 @@ using KRPC.Utils;
 using UnityEngine;
 using Tuple3 = KRPC.Utils.Tuple<double, double, double>;
 using Tuple4 = KRPC.Utils.Tuple<double, double, double, double>;
+using TupleV3 = KRPC.Utils.Tuple<Vector3d, Vector3d>;
+using TupleT3 = KRPC.Utils.Tuple<KRPC.Utils.Tuple<double, double, double>, KRPC.Utils.Tuple<double, double, double>>;
 
 namespace KRPC.SpaceCenter.Services.Parts
 {
@@ -487,11 +489,36 @@ namespace KRPC.SpaceCenter.Services.Parts
         }
 
         /// <summary>
-        /// An <see cref="Experiment"/> if the part is a science experiment, otherwise <c>null</c>.
+        /// An <see cref="Experiment"/> if the part contains a
+        /// single science experiment, otherwise <c>null</c>.
         /// </summary>
-        [KRPCProperty (Nullable = true)]
-        public Experiment Experiment {
-            get { return Experiment.Is (this) ? new Experiment (this) : null; }
+        /// <remarks>
+        /// Throws an exception if the part contains more than one experiment.
+        /// In that case, use <see cref="Experiments"/> to get the list of experiments in the part.
+        /// </remarks>
+        [KRPCProperty(Nullable = true)]
+        public Experiment Experiment
+        {
+            get {
+                var modules = InternalPart.Modules.OfType<ModuleScienceExperiment>();
+                if (modules.Count() > 1)
+                    throw new InvalidOperationException("Part contains multiple experiments.");
+                if (!modules.Any())
+                    return null;
+                return new Experiment(this, modules.First());
+            }
+        }
+
+        /// <summary>
+        /// A list of <see cref="Experiment"/> objects that the part contains.
+        /// </summary>
+        [KRPCProperty(Nullable = true)]
+        public IList<Experiment> Experiments
+        {
+            get {
+                return InternalPart.Modules.OfType<ModuleScienceExperiment>()
+                    .Select((module) => new Experiment(this, module)).ToList();
+            }
         }
 
         /// <summary>
@@ -661,7 +688,7 @@ namespace KRPC.SpaceCenter.Services.Parts
         /// </remarks>
         [KRPCMethod]
         [SuppressMessage ("Gendarme.Rules.Design.Generic", "DoNotExposeNestedGenericSignaturesRule")]
-        public Tuple<Tuple3,Tuple3> BoundingBox (ReferenceFrame referenceFrame)
+        public TupleT3 BoundingBox (ReferenceFrame referenceFrame)
         {
             if (ReferenceEquals (referenceFrame, null))
                 throw new ArgumentNullException (nameof (referenceFrame));

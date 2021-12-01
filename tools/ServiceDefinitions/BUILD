@@ -8,7 +8,12 @@ deps = [
     '//tools/build/ksp:Assembly-CSharp',
     '//tools/build/ksp:Assembly-CSharp-firstpass',
     '//tools/build/ksp:UnityEngine',
+    '//tools/build/ksp:UnityEngine.AnimationModule',
+    '//tools/build/ksp:UnityEngine.CoreModule',
+    '//tools/build/ksp:UnityEngine.IMGUIModule',
+    '//tools/build/ksp:UnityEngine.InputLegacyModule',
     '//tools/build/ksp:UnityEngine.UI',
+    '//tools/build/ksp:UnityEngine.SharedInternalsModule',
     '//tools/build/ksp:KRPC.IO.Ports',
     '//tools/build/mono-4.5:mscorlib',
     '//tools/build/mono-4.5:System',
@@ -31,7 +36,10 @@ csharp_assembly_info(
     name = 'AssemblyInfo',
     title = 'ServiceDefinitions',
     version = assembly_version,
-    copyright = author
+    copyright = author,
+    visibility = [
+        '//:__pkg__' # Make visible to //:csproj-deps so it can copy AssemblyInfo.cs to generated_deps
+    ]
 )
 
 # Build KRPC.dll using .Net 4.5 libraries as references instead of KSP libraries
@@ -44,7 +52,12 @@ csharp_library(
         '//tools/build/ksp:Assembly-CSharp',
         '//tools/build/ksp:Assembly-CSharp-firstpass',
         '//tools/build/ksp:UnityEngine',
+        '//tools/build/ksp:UnityEngine.AnimationModule',
+        '//tools/build/ksp:UnityEngine.CoreModule',
+        '//tools/build/ksp:UnityEngine.IMGUIModule',
+        '//tools/build/ksp:UnityEngine.InputLegacyModule',
         '//tools/build/ksp:UnityEngine.UI',
+        '//tools/build/ksp:UnityEngine.SharedInternalsModule',
         '//tools/build/ksp:KRPC.IO.Ports',
         '//tools/build/mono-4.5:mscorlib',
         '//tools/build/mono-4.5:System',

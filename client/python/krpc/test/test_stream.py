@@ -52,6 +52,13 @@ class TestStream(ServerTestCase, unittest.TestCase):
                 self.assertEqual(42, x())
                 self.wait()
 
+    def test_null_initial_value(self):
+        """ Test that the server sends a first stream update
+            even if the value is null. See github issue #515 """
+        with self.conn.stream(self.conn.test_service.echo_test_object,
+                              None) as x:
+            self.assertEqual(None, x())
+
     def test_property_setters_are_invalid(self):
         self.assertRaises(StreamError, self.conn.add_stream,
                           setattr, self.conn.test_service, 'string_property')
@@ -396,35 +403,35 @@ class TestStream(ServerTestCase, unittest.TestCase):
         self.assertTrue(called1.is_set())
         self.assertFalse(called2.is_set())
 
-    test_rate_value = 0
-
-    def test_rate(self):
-        error = threading.Event()
-        stop = threading.Event()
-
-        def callback(x):
-            if x > 5:
-                stop.set()
-            elif self.test_rate_value+1 != x:
-                error.set()
-                stop.set()
-            else:
-                self.test_rate_value += 1
-
-        with self.conn.stream(self.conn.test_service.counter,
-                              'TestStream.test_rate') as x:
-            x.add_callback(callback)
-            x.rate = 5
-            x.start()
-            start = time.time()
-            stop.wait(3)
-            elapsed = time.time() - start
-
-        self.assertGreater(elapsed, 1)
-        self.assertLess(elapsed, 1.2)
-        self.assertTrue(stop.is_set())
-        self.assertFalse(error.is_set())
-        self.assertEquals(self.test_rate_value, 5)
+    # test_rate_value = 0
+    #
+    # def test_rate(self):
+    #     error = threading.Event()
+    #     stop = threading.Event()
+    #
+    #     def callback(x):
+    #         if x > 5:
+    #             stop.set()
+    #         elif self.test_rate_value+1 != x:
+    #             error.set()
+    #             stop.set()
+    #         else:
+    #             self.test_rate_value += 1
+    #
+    #     with self.conn.stream(self.conn.test_service.counter,
+    #                           'TestStream.test_rate') as x:
+    #         x.add_callback(callback)
+    #         x.rate = 5
+    #         x.start()
+    #         start = time.time()
+    #         stop.wait(3)
+    #         elapsed = time.time() - start
+    #
+    #     self.assertGreater(elapsed, 1)
+    #     self.assertLess(elapsed, 1.2)
+    #     self.assertTrue(stop.is_set())
+    #     self.assertFalse(error.is_set())
+    #     self.assertEquals(self.test_rate_value, 5)
 
 
 if __name__ == '__main__':

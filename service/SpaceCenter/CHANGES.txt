@@ -1,3 +1,28 @@
+v0.4.9
+ * Update to work with KSP 1.10
+ * Use raycast to measure surface height more precisely in CelestialBody.SurfaceHeight (#524)
+ * Fix null reference exception when checking active vessel (#528, #530)
+ * Fix null reference exception when waiting for active vessel change (#516, #529)
+ * Add RCS.ThrustLimit and RCS.AvailableThrust (#519)
+ * Add Control.StageLock (#541)
+ * Fix launch checks and automatic vessel recovery in SpaceCenter.LaunchVessel
+ * Fix setting camera target to an unloaded vessel (#536)
+ * Fix Control.Legs and Control.Wheels not deploying/retracting legs/wheels correctly (#509, #261)
+ * Allow legs/wheels can be individually deployed/retracted using Leg.Deployed and Wheel.Deployed (#509, #261)
+ * Allow lights to be individually turned on and off (#261)
+ * Fix Engine and RCS fuel calculations only being done when they are enabled (#514, #254)
+ * Add support for parts that contain multiple experiments (#533)
+   * Part.Experiment now throws an exception if the part has more than one experiment
+   * Add Part.Experiments which returns a list of experiments in the part
+   * Update Parts.Experiments to return all experiments contained in the parts
+ * Add Experiment.Name and Experiment.Title
+ * Fix Fairing.Jettison and Fairing.Jettisoned for parts from the ProceduralFairings mod (#549)
+ * Fix Engine.SpecificImpulse returning 0 for Realism Overhaul engines that are active but not throttled up (#548)
+ * Fix compatibility with DMagic science experiments mod (#550)
+ * Fix available torque calculations for RCS (#552, #354)
+ * Fix RCS.MaxThrust returning incorrect values
+ * Fix SimulateAerodynamicForceAt (#587)
+
 v0.4.8
  * Allows RPCs to be accessed from game scenes other than just flight (#471)
  * Merge NameTag (http://github.com/krpc/NameTag) into the main kRPC release
