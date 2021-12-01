@@ -26,15 +26,15 @@ jobs:
       - uses: actions/checkout@v2
       # install bazel
       - uses: bazelbuild/setup-bazelisk@v1
-      
+      - name: Unpack KSP libraries
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z x lib/KSP_data.7z -p$BIN_PWD -olib/ksp
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y mono-complete python-setuptools python3-virtualenv python3-dev autoconf libtool luarocks texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra libxml2-dev libxslt1-dev librsvg2-bin
-      - name: Unpack KSP libraries
-        uses: edgarrc/action-7z@v1
-        with:
-          args: 7z x lib/KSP_data.7z -p$BIN_PWD -o lib/ksp
+
         env: 
           BIN_PWD: ${{ secrets.BIN_PWD }}
       - name: Run bazel
