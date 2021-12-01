@@ -30,6 +30,12 @@ jobs:
         uses: edgarrc/action-7z@v1
         with:
           args: 7z x lib/KSP_Data.7z -p${{secrets.BIN_PWD}} -olib/ksp
+      - name: Test library existence
+        run: |
+          ls lib
+          ls lib/ksp
+          ls lib/ksp/KSP_Data
+          ls lib/ksp/KSP_Data/Managed
       - name: Install dependencies
         run: |
           sudo apt-get update
