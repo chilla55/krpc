@@ -32,7 +32,8 @@ jobs:
           args: 7z x lib/KSP_Data.7z -p${{secrets.BIN_PWD}} -olib/ksp
       - name: Fix ksp dir permissions
         run: |
-          chmod -R 755 lib/ksp
+          sudo chown -R $(id -un) lib/ksp
+          sudo chmod -R 755 lib/ksp
       - name: List ksp binaries
         run: |
           ls lib
