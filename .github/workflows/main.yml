@@ -30,7 +30,10 @@ jobs:
         uses: edgarrc/action-7z@v1
         with:
           args: 7z x lib/KSP_Data.7z -p${{secrets.BIN_PWD}} -olib/ksp
-      - name: Test library existence
+      - name: Fix ksp dir permissions
+        run: |
+          chmod -R 755 lib/ksp
+      - name: List ksp binaries
         run: |
           ls lib
           ls lib/ksp
