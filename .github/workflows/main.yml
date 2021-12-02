@@ -30,16 +30,11 @@ jobs:
         uses: edgarrc/action-7z@v1
         with:
           args: 7z x lib/KSP_Data.7z -p${{secrets.BIN_PWD}} -olib/ksp
-      - name: Fix ksp dir permissions
+      - name: Setup lib directory
         run: |
           sudo chown -R $(id -un) lib/ksp
           sudo chmod -R 755 lib/ksp
-      - name: List ksp binaries
-        run: |
-          ls lib
-          ls lib/ksp
-          ls lib/ksp/KSP_Data
-          ls lib/ksp/KSP_Data/Managed
+          ln -s /lib/mono/4.5/ mono-4.5
       - name: Install dependencies
         run: |
           sudo apt-get update
