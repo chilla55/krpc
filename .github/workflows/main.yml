@@ -34,7 +34,9 @@ jobs:
         run: |
           sudo chown -R $(id -un) lib/ksp
           sudo chmod -R 755 lib/ksp
-          ln -s /lib/mono/4.5/ mono-4.5
+          ln -s /lib/mono/4.5/ lib/mono-4.5
+          echo "contents of mono-4.5"
+          ls lib/mono-4.5
       - name: Install dependencies
         run: |
           sudo apt-get update
