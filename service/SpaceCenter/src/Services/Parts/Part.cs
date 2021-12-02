@@ -902,7 +902,6 @@ namespace KRPC.SpaceCenter.Services.Parts
         }
 
         [KRPCProperty]
-
         public bool Glow
         {
             set
@@ -915,6 +914,7 @@ namespace KRPC.SpaceCenter.Services.Parts
                     InternalPart.SetHighlightType(global::Part.HighlightType.AlwaysOn);
                 }
             }
+        }
 
         public AutostrutState AutoStrutMode
         {
@@ -942,8 +942,6 @@ namespace KRPC.SpaceCenter.Services.Parts
            
                     default:
                         return AutostrutState.ForceRoot;
-                      
-
                 }
             }
 
@@ -951,6 +949,6 @@ namespace KRPC.SpaceCenter.Services.Parts
             {
 
             }
-        }
+        } 
     }
 }
