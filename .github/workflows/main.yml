@@ -48,4 +48,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2.2.4
         with:
+          name: krpc
           path: krpc-*.zip
