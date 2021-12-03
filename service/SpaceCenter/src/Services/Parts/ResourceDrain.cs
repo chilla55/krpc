@@ -33,7 +33,11 @@ namespace KRPC.SpaceCenter.Services.Parts
             if (drain == null)
                 throw new ArgumentException("Part is not a resource drain");
         }
-
+        /// <summary>
+        /// Tests for equality with another resource drain.
+        /// </summary>
+        /// <param name="other">The other part to test against.</param>
+        /// <returns>True iff the drains are equal.</returns>
         public override bool Equals(ResourceDrain other)
         {
             return
@@ -109,7 +113,16 @@ namespace KRPC.SpaceCenter.Services.Parts
         /// vessel mode drains from all available tanks.
         /// </summary>
         [KRPCEnum(Service = "SpaceCenter")]
-        public enum DrainModes { part, vessel }
+        public enum DrainModes {
+            /// <summary>
+            /// Drain only from the parent part.
+            /// </summary>
+            part,
+            /// <summary>
+            /// Drain from all available tanks.
+            /// </summary>
+            vessel
+        }
 
         /// <summary>
         /// Sets drain mode to part or vessel-wide

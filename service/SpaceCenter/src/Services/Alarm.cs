@@ -132,7 +132,7 @@ namespace KRPC.SpaceCenter.Services
         }
 
 
-        public void UdateAlarm() 
+        private void UdateAlarm() 
         {
             AlarmTypeBase newalarm;
             AlarmClockScenario.TryGetAlarm(InternalAlarm.Id, out newalarm);

@@ -130,7 +130,10 @@ namespace KRPC.SpaceCenter.Services.Parts
             SetExtension(servo.launchPosition);
             
         }
-
+        /// <summary>
+        /// Set the extension of the piston.
+        /// </summary>
+        /// <param name="value">The amount to which the piston should be extended.</param>
         public void SetExtension(float value)
         {
             BaseAxisField field = (BaseAxisField)typeof(ModuleRoboticServoPiston)
