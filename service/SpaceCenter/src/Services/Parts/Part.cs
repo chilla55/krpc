@@ -902,8 +902,10 @@ namespace KRPC.SpaceCenter.Services.Parts
             PartForcesAddon.AddInstantaneous (new Force (this, force, position, referenceFrame));
         }
 
+        /// <summary>
+        /// Sets if a part should be highlighted in glowing yellow.
+        /// </summary>
         [KRPCProperty]
-
         public bool Glow
         {
             set
@@ -916,7 +918,11 @@ namespace KRPC.SpaceCenter.Services.Parts
                     InternalPart.SetHighlightType(global::Part.HighlightType.AlwaysOn);
                 }
             }
-
+        }
+        /// <summary>
+        /// Gets the current autostrut mode for the given part.
+        /// </summary>
+        [KRPCProperty]
         public AutostrutState AutoStrutMode
         {
             get
@@ -943,15 +949,8 @@ namespace KRPC.SpaceCenter.Services.Parts
            
                     default:
                         return AutostrutState.ForceRoot;
-                      
-
                 }
             }
-
-            set
-            {
-
-            }
-        }
+        } 
     }
 }
